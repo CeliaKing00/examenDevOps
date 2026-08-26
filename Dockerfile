@@ -13,11 +13,13 @@ COPY images ./images
 # Stage 2 - Runtime
 # -----------------------------------------------------
 #FROM registry.redhat.io/rhel9/nginx-126:9.8-1782911077
-FROM nginxinc/nginx-unprivileged:stable
+FROM nginx:alpine
 
 # Copy the static website
-COPY --from=builder /app/ /usr/share/nginx/html/
+#COPY --from=builder /app/ /usr/share/nginx/html/
+COPY . /usr/share/nginx/html
 
-EXPOSE 8080
+#EXPOSE 8080
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
