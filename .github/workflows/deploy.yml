@@ -12,7 +12,7 @@ env:
 jobs:
   build-and-push:
     name: CI - Build & Push
-    runs-on: runner-isi
+    runs-on: ubuntu-latest
 
     steps:
       - name: Récupération du code source
