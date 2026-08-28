@@ -39,6 +39,9 @@ jobs:
     needs: build-and-push
     runs-on: [self-hosted, runner-isi]
 
+    env: 
+      IMAGE_NAME: mon-site-web
+      
     steps:
       - name: Pull de la dernière image depuis Docker Hub
         run: |
