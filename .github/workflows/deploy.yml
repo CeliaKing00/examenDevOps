@@ -31,8 +31,8 @@ jobs:
 
       - name: Push de l'image vers Docker Hub
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
   deploy:
     name: CD - Deploy
@@ -41,20 +41,24 @@ jobs:
 
     env: 
       IMAGE_NAME: mon-site-web
-      
+
     steps:
       - name: Pull de la dernière image depuis Docker Hub
+        shell: powershell
         run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker pull ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Stopper le conteneur existant (si présent)
+        shell: powershell
         run: |
-          docker stop ${{ env.IMAGE_NAME }} || true
+          docker stop ${{ env.IMAGE_NAME }} 2>$null
 
       - name: Supprimer l'ancien conteneur
+        shell: powershell
         run: |
-          docker rm ${{ env.IMAGE_NAME }} || true
+          docker rm ${{ env.IMAGE_NAME }} 2>$null
 
       - name: Lancer le nouveau conteneur
+        shell: powershell
         run: |
-          docker run -d --name ${{ env.IMAGE_NAME }} -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker run -d --name ${{ env.IMAGE_NAME }} -p 80:80 ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
