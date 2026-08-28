@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  IMAGE_NAME: mon-site-web
+  IMAGE_NAME: celiaking00/examen-devops
   IMAGE_TAG: ${{ github.sha }}
   DOCKER_REGISTRY: docker.io
 
@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: CD - Deploy
     needs: build-and-push
-    runs-on: [self-hosted, runner-isi]
+    runs-on: [self-hosted, runner-isi, ubuntu-latest]
 
     steps:
       - name: Pull de la dernière image depuis Docker Hub
