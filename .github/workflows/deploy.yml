@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: CD - Deploy
     needs: build-and-push
-    runs-on: runner-isi
+    runs-on: [self-hosted, runner-isi]
 
     steps:
       - name: Pull de la dernière image depuis Docker Hub
