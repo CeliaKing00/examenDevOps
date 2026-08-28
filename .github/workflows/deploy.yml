@@ -37,7 +37,7 @@ jobs:
   deploy:
     name: CD - Deploy
     needs: build-and-push
-    runs-on: [self-hosted, runner-isi, ubuntu-latest]
+    runs-on: [ubuntu-latest, self-hosted, runner-isi]
 
     env: 
       IMAGE_NAME: mon-site-web
