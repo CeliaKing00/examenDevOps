@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  IMAGE_NAME: mon-site-web
+  IMAGE_NAME: celiaking00/examen-devops
   IMAGE_TAG: ${{ github.sha }}
   DOCKER_REGISTRY: docker.io
 
@@ -29,40 +29,29 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Debug
-        run: |
-          echo "USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}"
-          
       - name: Push de l'image vers Docker Hub
         run: |
-          docker push ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
-          docker push ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
   deploy:
     name: CD - Deploy
     needs: build-and-push
     runs-on: [self-hosted, runner-isi, ubuntu-latest]
 
-    env: 
-      IMAGE_NAME: mon-site-web
-
     steps:
       - name: Pull de la dernière image depuis Docker Hub
-        shell: powershell
         run: |
-          docker pull ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Stopper le conteneur existant (si présent)
-        shell: powershell
         run: |
-          docker stop ${{ env.IMAGE_NAME }} 2>$null
+          docker stop ${{ env.IMAGE_NAME }} || true
 
       - name: Supprimer l'ancien conteneur
-        shell: powershell
         run: |
-          docker rm ${{ env.IMAGE_NAME }} 2>$null
+          docker rm ${{ env.IMAGE_NAME }} || true
 
       - name: Lancer le nouveau conteneur
-        shell: powershell
         run: |
-          docker run -d --name ${{ env.IMAGE_NAME }} -p 80:80 ${{ env.DOCKERHUB_REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          docker run -d --name ${{ env.IMAGE_NAME }} -p 80:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
